@@ -1,0 +1,2 @@
+import * as THREE from 'three';
+export function showConsequence(scene,position,kind){const color=kind==='good'?0x8ee8b5:0xe95648;const mat=new THREE.MeshBasicMaterial({color,transparent:true,opacity:.8,wireframe:true});const ring=new THREE.Mesh(new THREE.SphereGeometry(.45,12,8),mat);ring.position.copy(position);scene.add(ring);let t=0;return()=>{t+=.035;ring.scale.setScalar(1+t*2.8);mat.opacity=Math.max(0,.8-t);if(t>1.1){scene.remove(ring);ring.geometry.dispose();mat.dispose();return true}return false}}
