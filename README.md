@@ -28,4 +28,5 @@ The workflow in `.github/workflows/deploy.yml` builds and deploys `dist/` on pus
 
 ## Notes
 
-Difficulty selection is represented by the item pool: the standard flow uses familiar items, while the harder pool includes the confusing tetra pack, greasy pizza box, and thermocol examples. This keeps session length fixed for comparable field-demo measurements. Disposal rules can vary by city; the tips recommend checking local collection guidance where needed. Sound is off by default; the control is present for the requested accessibility setting, and the current simulation does not ship sound files.
+Difficulty is selectable at the start. Easy excludes the confusing examples, medium mixes all items, and hard presents the tetra pack, greasy pizza box, and thermocol early while keeping the round at the same length for comparison. Disposal rules can vary by city; the tips recommend checking local collection guidance where needed. Sound is off by default; enabling it plays short synthesized feedback cues through the browser audio API.
+
