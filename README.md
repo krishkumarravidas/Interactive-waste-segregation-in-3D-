@@ -1,32 +1,68 @@
 # WasteWise: Interactive Waste Segregation Training Simulation
 
-A browser-based 3D training simulation for household waste sorting, developed for BMSIT Societal Project (1BSOP308) and SDGs 6, 11, and 12. It runs as a static site and needs no account or server.
+WasteWise is a browser-based 3D training simulation that helps households practise sorting everyday waste into wet, dry, and hazardous bins. It was developed for the BMSIT Societal Project (1BSOP308), supporting SDGs 6, 11, and 12.
+
+**Live site:** [Open the training simulation](https://krishkumarravidas.github.io/Interactive-waste-segregation-in-3D-/)
+
+The site is a static build and needs no account or server. It works in modern desktop and mobile browsers.
+
+## How the training simulation works
+
+1. **Optional start details:** Learners can enter an age group, area type, and whether they have segregated waste before. These fields can be left blank.
+2. **Pre-test:** Sort 10 items without correctness feedback to record a baseline.
+3. **Training:** Sort 20 items with immediate feedback, a short explanation for each item, score, and streak.
+4. **Post-test:** Sort 10 more items without correctness feedback.
+5. **Review:** Compare pre-test and post-test accuracy, see the score change and up to three commonly missed items, then download the session log as CSV.
+
+The start screen also has a short, expandable guide to the stages, controls, results, and privacy. Interface text is available in English, Kannada, and Hindi.
+
+### Controls
+
+- Drag an item onto a bin with a mouse, or touch and drag it on a phone or tablet.
+- Alternatively, select an item and press **1** for wet, **2** for dry, or **3** for hazardous.
+- Follow the displayed bin labels and icons; colour is not the only category cue.
+
+Practice answers show the correct bin, a one-line disposal tip, and a visual consequence. Pre-test and post-test answers are recorded without revealing correctness, so the before-and-after comparison remains meaningful.
 
 ## Run locally
 
 - Install Node.js 20.19+ or 22.12+.
 - Run `npm install`.
 - Run `npm run dev` and open the local URL printed by Vite.
-- Run `npm test` for the scoring and category checks.
-- Run `npm run build` to create the deployable `dist/` directory; `npm run preview` serves that build locally.
+- Run `npm run build` to create the static deployable `dist/` directory.
+- Run `npm run preview` to serve the production build locally.
+- Run `npm test` to execute the Vitest scoring and category checks.
 
-## Training simulation
+## Session data and privacy
 
-The optional start form records age group, area type, and prior segregation practice. Each session has a 10-item baseline, 20-item guided practice round, and 10-item learning check. Results compare baseline and post-training accuracy, list up to three most-missed post-test items, and can be downloaded as CSV. Session records remain in the current browser's local storage.
+There is no sign-in. Session records are kept in the current browser's `localStorage`. Use **Download CSV** on the result screen to export the session data. The CSV includes the session ID, optional learner details, pre-test and post-test scores, item mistakes, and duration.
 
-Drag or touch-hold the object in the 3D scene and release it over a bin. You can also select a bin chip and use 1 / 2 / 3 on the keyboard after picking up an item. Practice answers show a visual consequence and a short disposal tip; the baseline and final check record answers without feedback. Use the language menu for English, Kannada, and Hindi.
+An optional Google Apps Script endpoint can be configured with `VITE_LOG_URL` at build time. When configured, the simulation makes a non-blocking POST attempt; a failed request does not interrupt the session. Leave this variable unset to keep records in the browser only.
 
-## Architecture
+## Project structure
 
-Vanilla JavaScript and Three.js handle the lightweight scene, pointer raycasting, and simple animated feedback. Session state and scoring are separate modules; waste item definitions are JSON data; the UI is rendered from small UI modules. Session capture is local-first. Set `VITE_LOG_URL` to an optional Google Apps Script endpoint to attempt a non-blocking POST; remote submission errors do not interrupt the session.
+```text
+src/
+  analytics/log.js       Local session storage, optional POST, and CSV export
+  data/items.json        Waste examples, categories, shapes, and disposal tips
+  game/                  Session state, learning flow, and scoring logic
+  i18n/                  English, Kannada, and Hindi interface strings
+  scene/                 Three.js scene, item models, and visual effects
+  ui/                    Start screen, guide, training HUD, and result review
+.github/workflows/       GitHub Pages build and deployment workflow
+```
 
-The scene uses procedural primitive geometry only. Phone-sized screens use reduced pixel ratio and antialiasing is disabled. There are no downloaded 3D models, audio files, or other external assets. The interface uses system fallbacks if its optional Google Fonts request is unavailable. No third-party visual assets are included.
+The app uses Vite, vanilla JavaScript, and Three.js. The scene is generated from primitive geometry, with raycasting for item selection and lightweight animations for feedback. Scoring and session flow are separate from the scene and UI, and item definitions are data-driven. The project avoids downloaded 3D models and audio assets; short optional sound cues are synthesized in the browser. On phones, rendering quality is reduced to help performance. The interface uses system font fallbacks if the optional Google Fonts request is unavailable.
 
 ## GitHub Pages deployment
 
-The workflow in `.github/workflows/deploy.yml` builds and deploys `dist/` on pushes to `main`. In the repository's **Settings → Pages**, select **GitHub Actions** as the build and deployment source. The Vite base path is set to `/Interactive-waste-segregation-in-3D-/` for this repository. Change `base` in `vite.config.js` if deploying under a different repository name or a custom domain.
+The workflow at `.github/workflows/deploy.yml` builds and deploys `dist/` when changes are pushed to `main`. In the repository, open **Settings → Pages** and choose **GitHub Actions** as the deployment source.
 
-## Notes
+The Vite base path is configured for this repository in `vite.config.js` as `/Interactive-waste-segregation-in-3D-/`. Update it if deploying under another repository path or a custom domain.
 
-Difficulty is selectable at the start. Easy excludes the confusing examples, medium mixes all items, and hard presents the tetra pack, greasy pizza box, and thermocol early while keeping the round at the same length for comparison. Disposal rules can vary by city; the tips recommend checking local collection guidance where needed. Sound is off by default; enabling it plays short synthesized feedback cues through the browser audio API.
+## Design choices and limitations
 
+- Difficulty is selectable at the start. Easy uses more obvious examples; medium mixes the item set; hard introduces confusing examples such as tetra packs, greasy pizza boxes, and thermocol early. Each round keeps the same number of items.
+- Waste collection rules can vary between cities. Tips encourage learners to follow their local collection guidance where appropriate.
+- Sound is off by default. When enabled, brief synthesized feedback cues use the browser audio API.
+- No learner data is sent to a service unless `VITE_LOG_URL` is explicitly configured.
