@@ -1,4 +1,4 @@
-# Codex Prompt: Interactive 3D Waste Segregation Training Simulation
+# Codex Prompt: Interactive 3D Waste Segregation Training Simulator (Web)
 
 ## Role
 You are a senior web/3D developer. Build a complete, working **browser-based interactive 3D training simulation** that teaches households to segregate waste correctly. Work inside this repository and commit as you go.
